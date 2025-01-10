@@ -1,6 +1,5 @@
 import base64
 
-import django
 import pytest
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -120,6 +119,22 @@ class BasicAuthTests(TestCase):
         )
         assert response.status_code == status.HTTP_200_OK
 
+    def test_post_json_without_password_failing_basic_auth(self):
+        """Ensure POSTing json without password (even if password is empty string) returns 401"""
+        self.user.set_password("")
+        credentials = ('%s' % (self.username))
+        base64_credentials = base64.b64encode(
+            credentials.encode(HTTP_HEADER_ENCODING)
+        ).decode(HTTP_HEADER_ENCODING)
+        auth = 'Basic %s' % base64_credentials
+        response = self.csrf_client.post(
+            '/basic/',
+            {'example': 'example'},
+            format='json',
+            HTTP_AUTHORIZATION=auth
+        )
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
     def test_regression_handle_bad_base64_basic_auth_header(self):
         """Ensure POSTing JSON over basic auth with incorrectly padded Base64 string is handled correctly"""
         # regression test for issue in 'rest_framework.authentication.BasicAuthentication.authenticate'
@@ -219,21 +234,13 @@ class SessionAuthTests(TestCase):
         Ensure POSTing form over session authentication with CSRF token succeeds.
         Regression test for #6088
         """
-        # Remove this shim when dropping support for Django 2.2.
-        if django.VERSION < (3, 0):
-            from django.middleware.csrf import _get_new_csrf_token
-        else:
-            from django.middleware.csrf import (
-                _get_new_csrf_string, _mask_cipher_secret
-            )
-
-            def _get_new_csrf_token():
-                return _mask_cipher_secret(_get_new_csrf_string())
-
         self.csrf_client.login(username=self.username, password=self.password)
 
         # Set the csrf_token cookie so that CsrfViewMiddleware._get_token() works
-        token = _get_new_csrf_token()
+        from django.middleware.csrf import (
+            _get_new_csrf_string, _mask_cipher_secret
+        )
+        token = _mask_cipher_secret(_get_new_csrf_string())
         self.csrf_client.cookies[settings.CSRF_COOKIE_NAME] = token
 
         # Post the token matching the cookie value

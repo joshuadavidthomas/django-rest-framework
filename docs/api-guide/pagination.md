@@ -227,7 +227,7 @@ Note that the `paginate_queryset` method may set state on the pagination instanc
 
 ## Example
 
-Suppose we want to replace the default pagination output style with a modified format that  includes the next and previous links under in a nested 'links' key. We could specify a custom pagination class like so:
+Suppose we want to replace the default pagination output style with a modified format that includes the next and previous links under in a nested 'links' key. We could specify a custom pagination class like so:
 
     class CustomPagination(pagination.PageNumberPagination):
         def get_paginated_response(self, data):
@@ -240,7 +240,7 @@ Suppose we want to replace the default pagination output style with a modified f
                 'results': data
             })
 
-We'd then need to setup the custom class in our configuration:
+We'd then need to set up the custom class in our configuration:
 
     REST_FRAMEWORK = {
         'DEFAULT_PAGINATION_CLASS': 'my_project.apps.core.pagination.CustomPagination',
@@ -262,16 +262,7 @@ API responses for list endpoints will now include a `Link` header, instead of in
 
 ![Link Header][link-header]
 
-*A custom pagination style, using the 'Link' header'*
-
-## Pagination & schemas
-
-You can also make the pagination controls available to the schema autogeneration
-that REST framework provides, by implementing a `get_schema_fields()` method. This method should have the following signature:
-
-`get_schema_fields(self, view)`
-
-The method should return a list of `coreapi.Field` instances.
+*A custom pagination style, using the 'Link' header*
 
 ---
 

@@ -79,6 +79,15 @@ class UniqueValidator:
             smart_repr(self.queryset)
         )
 
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return (self.message == other.message
+                and self.requires_context == other.requires_context
+                and self.queryset == other.queryset
+                and self.lookup == other.lookup
+                )
+
 
 class UniqueTogetherValidator:
     """
@@ -150,11 +159,21 @@ class UniqueTogetherValidator:
         queryset = self.filter_queryset(attrs, queryset, serializer)
         queryset = self.exclude_current_instance(attrs, queryset, serializer.instance)
 
-        # Ignore validation if any field is None
-        checked_values = [
-            value for field, value in attrs.items() if field in self.fields
+        checked_names = [
+            serializer.fields[field_name].source for field_name in self.fields
         ]
-        if None not in checked_values and qs_exists(queryset):
+        # Ignore validation if any field is None
+        if serializer.instance is None:
+            checked_values = [attrs[field_name] for field_name in checked_names]
+        else:
+            # Ignore validation if all field values are unchanged
+            checked_values = [
+                attrs[field_name]
+                for field_name in checked_names
+                if attrs[field_name] != getattr(serializer.instance, field_name)
+            ]
+
+        if checked_values and None not in checked_values and qs_exists(queryset):
             field_names = ', '.join(self.fields)
             message = self.message.format(field_names=field_names)
             raise ValidationError(message, code='unique')
@@ -166,6 +185,16 @@ class UniqueTogetherValidator:
             smart_repr(self.fields)
         )
 
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return (self.message == other.message
+                and self.requires_context == other.requires_context
+                and self.missing_message == other.missing_message
+                and self.queryset == other.queryset
+                and self.fields == other.fields
+                )
+
 
 class ProhibitSurrogateCharactersValidator:
     message = _('Surrogate characters are not allowed: U+{code_point:X}.')
@@ -176,6 +205,13 @@ class ProhibitSurrogateCharactersValidator:
                                     if 0xD800 <= ord(ch) <= 0xDFFF):
             message = self.message.format(code_point=ord(surrogate_character))
             raise ValidationError(message, code=self.code)
+
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return (self.message == other.message
+                and self.code == other.code
+                )
 
 
 class BaseUniqueForValidator:
@@ -229,6 +265,17 @@ class BaseUniqueForValidator:
             raise ValidationError({
                 self.field: message
             }, code='unique')
+
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return (self.message == other.message
+                and self.missing_message == other.missing_message
+                and self.requires_context == other.requires_context
+                and self.queryset == other.queryset
+                and self.field == other.field
+                and self.date_field == other.date_field
+                )
 
     def __repr__(self):
         return '<%s(queryset=%s, field=%s, date_field=%s)>' % (

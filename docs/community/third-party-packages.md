@@ -46,6 +46,10 @@ Check out a grid detailing all the packages and ecosystem around Django REST Fra
 
 To submit new content, [open an issue][drf-create-issue] or [create a pull request][drf-create-pr].
 
+## Async Support
+
+*  [adrf](https://github.com/em1208/adrf) - Async support, provides async Views, ViewSets, and Serializers.
+
 ### Authentication
 
 * [djangorestframework-digestauth][djangorestframework-digestauth] - Provides Digest Access Authentication support.
@@ -121,10 +125,11 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [djangorestframework-chain][djangorestframework-chain] - Allows arbitrary chaining of both relations and lookup filters.
 * [django-url-filter][django-url-filter] - Allows a safe way to filter data via human-friendly URLs. It is a generic library which is not tied to DRF but it provides easy integration with DRF.
 * [drf-url-filter][drf-url-filter] is a simple Django app to apply filters on drf `ModelViewSet`'s `Queryset` in a clean, simple and configurable way. It also supports validations on incoming query params and their values.
-* [django-rest-framework-guardian][django-rest-framework-guardian] - Provides integration with django-guardian, including the `DjangoObjectPermissionsFilter` previously found in DRF.
+* [django-rest-framework-guardian2][django-rest-framework-guardian2] - Provides integration with django-guardian, including the `DjangoObjectPermissionsFilter` previously found in DRF.
 
 ### Misc
 
+* [drf-sendables][drf-sendables] - User messages for Django REST Framework
 * [cookiecutter-django-rest][cookiecutter-django-rest] - A cookiecutter template that takes care of the setup and configuration so you can focus on making your REST apis awesome.
 * [djangorestrelationalhyperlink][djangorestrelationalhyperlink] - A hyperlinked serializer that can can be used to alter relationships via hyperlinks, but otherwise like a hyperlink model serializer.
 * [django-rest-framework-proxy][django-rest-framework-proxy] - Proxy to redirect incoming request to another API server.
@@ -148,7 +153,16 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [django-elasticsearch-dsl-drf][django-elasticsearch-dsl-drf] - Integrate Elasticsearch DSL with Django REST framework. Package provides views, serializers, filter backends, pagination and other handy add-ons.
 * [django-api-client][django-api-client] - DRF client that groups the Endpoint response, for use in CBVs and FBV as if you were working with Django's Native Models..
 * [fast-drf] - A model based library for making API development faster and easier.
+* [django-requestlogs] - Providing middleware and other helpers for audit logging for REST framework.
+* [drf-standardized-errors][drf-standardized-errors] - DRF exception handler to standardize error responses for all API endpoints.
+* [drf-api-action][drf-api-action] - uses the power of DRF also as a library functions
 
+### Customization
+
+* [drf-redesign][drf-redesign] - A project that gives a fresh look to the browse-able API using Bootstrap 5.
+* [drf-material][drf-material] - A project that gives a sleek and elegant look to the browsable API using Material Design.
+
+[drf-sendables]: https://github.com/amikrop/drf-sendables
 [cite]: http://www.software-ecosystems.com/Software_Ecosystems/Ecosystems.html
 [cookiecutter]: https://github.com/jpadilla/cookiecutter-django-rest-framework
 [new-repo]: https://github.com/new
@@ -203,7 +217,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [dry-rest-permissions]: https://github.com/FJNR-inc/dry-rest-permissions
 [django-url-filter]: https://github.com/miki725/django-url-filter
 [drf-url-filter]: https://github.com/manjitkumar/drf-url-filters
-[cookiecutter-django-rest]:  https://github.com/agconti/cookiecutter-django-rest
+[cookiecutter-django-rest]: https://github.com/agconti/cookiecutter-django-rest
 [drf-haystack]: https://drf-haystack.readthedocs.io/en/latest/
 [django-rest-framework-version-transforms]: https://github.com/mrhwick/django-rest-framework-version-transforms
 [djangorestframework-jsonapi]: https://github.com/django-json-api/django-rest-framework-json-api
@@ -227,7 +241,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [djangorestframework-dataclasses]: https://github.com/oxan/djangorestframework-dataclasses
 [django-restql]: https://github.com/yezyilomo/django-restql
 [djangorestframework-mvt]: https://github.com/corteva/djangorestframework-mvt
-[django-rest-framework-guardian]: https://github.com/rpkilby/django-rest-framework-guardian
+[django-rest-framework-guardian2]: https://github.com/johnthagen/django-rest-framework-guardian2
 [drf-viewset-profiler]: https://github.com/fvlima/drf-viewset-profiler
 [djangorestframework-features]: https://github.com/cloudcode-hungary/django-rest-framework-features/
 [django-elasticsearch-dsl-drf]: https://github.com/barseghyanartur/django-elasticsearch-dsl-drf
@@ -237,3 +251,8 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [graphwrap]: https://github.com/PaulGilmartin/graph_wrap
 [rest-framework-actions]: https://github.com/AlexisMunera98/rest-framework-actions
 [fast-drf]: https://github.com/iashraful/fast-drf
+[django-requestlogs]: https://github.com/Raekkeri/django-requestlogs
+[drf-standardized-errors]: https://github.com/ghazi-git/drf-standardized-errors
+[drf-api-action]: https://github.com/Ori-Roza/drf-api-action
+[drf-redesign]: https://github.com/youzarsiph/drf-redesign
+[drf-material]: https://github.com/youzarsiph/drf-material

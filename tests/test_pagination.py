@@ -18,7 +18,7 @@ class TestPaginationIntegration:
     Integration tests.
     """
 
-    def setup(self):
+    def setup_method(self):
         class PassThroughSerializer(serializers.BaseSerializer):
             def to_representation(self, item):
                 return item
@@ -140,7 +140,7 @@ class TestPaginationDisabledIntegration:
     Integration tests for disabled pagination.
     """
 
-    def setup(self):
+    def setup_method(self):
         class PassThroughSerializer(serializers.BaseSerializer):
             def to_representation(self, item):
                 return item
@@ -163,7 +163,7 @@ class TestPageNumberPagination:
     Unit tests for `pagination.PageNumberPagination`.
     """
 
-    def setup(self):
+    def setup_method(self):
         class ExamplePagination(pagination.PageNumberPagination):
             page_size = 5
 
@@ -180,8 +180,9 @@ class TestPageNumberPagination:
     def get_html_context(self):
         return self.pagination.get_html_context()
 
-    def test_no_page_number(self):
-        request = Request(factory.get('/'))
+    @pytest.mark.parametrize('url', ['/', '/?page='])
+    def test_no_page_number(self, url):
+        request = Request(factory.get(url))
         queryset = self.paginate_queryset(request)
         content = self.get_paginated_content(queryset)
         context = self.get_html_context()
@@ -273,6 +274,7 @@ class TestPageNumberPagination:
 
         assert self.pagination.get_paginated_response_schema(unpaginated_schema) == {
             'type': 'object',
+            'required': ['count', 'results'],
             'properties': {
                 'count': {
                     'type': 'integer',
@@ -302,7 +304,7 @@ class TestPageNumberPaginationOverride:
     the Django Paginator Class is overridden.
     """
 
-    def setup(self):
+    def setup_method(self):
         class OverriddenDjangoPaginator(DjangoPaginator):
             # override the count in our overridden Django Paginator
             # we will only return one page, with one item
@@ -358,7 +360,7 @@ class TestLimitOffset:
     Unit tests for `pagination.LimitOffsetPagination`.
     """
 
-    def setup(self):
+    def setup_method(self):
         class ExamplePagination(pagination.LimitOffsetPagination):
             default_limit = 10
             max_limit = 15
@@ -584,6 +586,7 @@ class TestLimitOffset:
 
         assert self.pagination.get_paginated_response_schema(unpaginated_schema) == {
             'type': 'object',
+            'required': ['count', 'results'],
             'properties': {
                 'count': {
                     'type': 'integer',
@@ -626,6 +629,24 @@ class CursorPaginationTestsMixin:
         request = Request(factory.get('/', {'ordering': '-username'}))
         ordering = self.pagination.get_ordering(request, [], MockView())
         assert ordering == ('-username',)
+
+        request = Request(factory.get('/', {'ordering': 'invalid'}))
+        ordering = self.pagination.get_ordering(request, [], MockView())
+        assert ordering == ('created',)
+
+    def test_use_with_ordering_filter_without_ordering_default_value(self):
+        class MockView:
+            filter_backends = (filters.OrderingFilter,)
+            ordering_fields = ['username', 'created']
+
+        request = Request(factory.get('/'))
+        ordering = self.pagination.get_ordering(request, [], MockView())
+        # it gets the value of `ordering` provided by CursorPagination
+        assert ordering == ('created',)
+
+        request = Request(factory.get('/', {'ordering': 'username'}))
+        ordering = self.pagination.get_ordering(request, [], MockView())
+        assert ordering == ('username',)
 
         request = Request(factory.get('/', {'ordering': 'invalid'}))
         ordering = self.pagination.get_ordering(request, [], MockView())
@@ -918,14 +939,19 @@ class CursorPaginationTestsMixin:
 
         assert self.pagination.get_paginated_response_schema(unpaginated_schema) == {
             'type': 'object',
+            'required': ['results'],
             'properties': {
                 'next': {
                     'type': 'string',
                     'nullable': True,
+                    'format': 'uri',
+                    'example': 'http://api.example.org/accounts/?cursor=cD00ODY%3D"'
                 },
                 'previous': {
                     'type': 'string',
                     'nullable': True,
+                    'format': 'uri',
+                    'example': 'http://api.example.org/accounts/?cursor=cj0xJnA9NDg3'
                 },
                 'results': unpaginated_schema,
             },
@@ -937,7 +963,7 @@ class TestCursorPagination(CursorPaginationTestsMixin):
     Unit tests for `pagination.CursorPagination`.
     """
 
-    def setup(self):
+    def setup_method(self):
         class MockObject:
             def __init__(self, idx):
                 self.created = idx
