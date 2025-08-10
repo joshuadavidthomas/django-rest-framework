@@ -57,7 +57,7 @@
           <a class="repo-link btn btn-inverse btn-small " rel="next" href="../ajax-csrf-cors/">
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
-          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../api-clients/">
+          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../documenting-your-api/">
             <i class="icon-arrow-left icon-white"></i> Previous
           </a>
           <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
@@ -238,10 +238,6 @@
                     <a href="../documenting-your-api/">Documenting your API</a>
                   </li>
                   
-                  <li >
-                    <a href="../api-clients/">API Clients</a>
-                  </li>
-                  
                   <li class="active" >
                     <a href="./">Internationalization</a>
                   </li>
@@ -291,6 +287,18 @@
                   
                   <li >
                     <a href="../../community/release-notes/">Release Notes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.16-announcement/">3.16 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.15-announcement/">3.15 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.14-announcement/">3.14 Announcement</a>
                   </li>
                   
                   <li >
@@ -455,8 +463,8 @@
 <p>You can change the default language by using the standard Django <code>LANGUAGE_CODE</code> setting:</p>
 <pre><code>LANGUAGE_CODE = "es-es"
 </code></pre>
-<p>You can turn on per-request language requests by adding <code>LocalMiddleware</code> to your <code>MIDDLEWARE_CLASSES</code> setting:</p>
-<pre><code>MIDDLEWARE_CLASSES = [
+<p>You can turn on per-request language requests by adding <code>LocalMiddleware</code> to your <code>MIDDLEWARE</code> setting:</p>
+<pre><code>MIDDLEWARE = [
     ...
     'django.middleware.locale.LocaleMiddleware'
 ]
@@ -487,7 +495,7 @@ Host: example.org
 ]
 </code></pre>
 <h2 id="adding-new-translations"><a class="toclink" href="#adding-new-translations">Adding new translations</a></h2>
-<p>REST framework translations are managed online using <a href="https://www.transifex.com/projects/p/django-rest-framework/">Transifex</a>. You can use the Transifex service to add new translation languages. The maintenance team will then ensure that these translation strings are included in the REST framework package.</p>
+<p>REST framework translations are managed online using <a href="https://explore.transifex.com/django-rest-framework-1/django-rest-framework/">Transifex</a>. You can use the Transifex service to add new translation languages. The maintenance team will then ensure that these translation strings are included in the REST framework package.</p>
 <p>Sometimes you may need to add translation strings to your project locally. You may need to do this if:</p>
 <ul>
 <li>You want to use REST Framework in a language which has not been translated yet on Transifex.</li>
@@ -519,7 +527,7 @@ available for Django to use. You should see a message like <code>processing file
 </ol>
 <p>If you're only translating custom error messages that exist inside your project codebase you don't need to copy the REST framework source <code>django.po</code> file into a <code>LOCALE_PATHS</code> folder, and can instead simply run Django's standard <code>makemessages</code> process.</p>
 <h2 id="how-the-language-is-determined"><a class="toclink" href="#how-the-language-is-determined">How the language is determined</a></h2>
-<p>If you want to allow per-request language preferences you'll need to include <code>django.middleware.locale.LocaleMiddleware</code> in your <code>MIDDLEWARE_CLASSES</code> setting.</p>
+<p>If you want to allow per-request language preferences you'll need to include <code>django.middleware.locale.LocaleMiddleware</code> in your <code>MIDDLEWARE</code> setting.</p>
 <p>You can find more information on how the language preference is determined in the <a href="https://docs.djangoproject.com/en/stable/topics/i18n/translation/#how-django-discovers-language-preference">Django documentation</a>. For reference, the method is:</p>
 <ol>
 <li>First, it looks for the language prefix in the requested URL.</li>

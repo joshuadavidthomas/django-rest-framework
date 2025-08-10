@@ -239,10 +239,6 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/api-clients/">API Clients</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/internationalization/">Internationalization</a>
                   </li>
                   
@@ -291,6 +287,18 @@
                   
                   <li >
                     <a href="../../community/release-notes/">Release Notes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.16-announcement/">3.16 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.15-announcement/">3.15 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.14-announcement/">3.14 Announcement</a>
                   </li>
                   
                   <li >
@@ -470,7 +478,7 @@
                     </li>
                   
                     <li>
-                      <a href="#media_typenone">media_type=None</a>
+                      <a href="#accepted_media_typenone">accepted_media_type=None</a>
                     </li>
                   
                     <li>
@@ -492,7 +500,7 @@
 
                   
                     <li>
-                      <a href="#varying-behaviour-by-media-type">Varying behaviour by media type</a>
+                      <a href="#varying-behavior-by-media-type">Varying behavior by media type</a>
                     </li>
                   
                     <li>
@@ -530,7 +538,7 @@
                     </li>
                   
                     <li>
-                      <a href="#xlsx-binary-spreadsheet-endpoints">XLSX (Binary Spreadsheet Endpoints)</a>
+                      <a href="#microsoft-excel-xlsx-binary-spreadsheet-endpoints">Microsoft Excel: XLSX (Binary Spreadsheet Endpoints)</a>
                     </li>
                   
                     <li>
@@ -648,7 +656,7 @@ def user_count_view(request, format=None):
 Unlike other renderers, the data passed to the <code>Response</code> does not need to be serialized.  Also, unlike other renderers, you may want to include a <code>template_name</code> argument when creating the <code>Response</code>.</p>
 <p>The TemplateHTMLRenderer will create a <code>RequestContext</code>, using the <code>response.data</code> as the context dict, and determine a template name to use to render the context.</p>
 <hr />
-<p><strong>Note:</strong> When used with a view that makes use of a serializer the <code>Response</code> sent for rendering may not be a dictionary and will need to be wrapped in a dict before returning to allow the TemplateHTMLRenderer to render it. For example:</p>
+<p><strong>Note:</strong> When used with a view that makes use of a serializer the <code>Response</code> sent for rendering may not be a dictionary and will need to be wrapped in a dict before returning to allow the <code>TemplateHTMLRenderer</code> to render it. For example:</p>
 <pre><code>response.data = {'results': response.data}
 </code></pre>
 <hr />
@@ -744,12 +752,12 @@ def simple_html_view(request):
 <p><strong>.charset</strong>: <code>utf-8</code></p>
 <hr />
 <h1 id="custom-renderers"><a class="toclink" href="#custom-renderers">Custom renderers</a></h1>
-<p>To implement a custom renderer, you should override <code>BaseRenderer</code>, set the <code>.media_type</code> and <code>.format</code> properties, and implement the <code>.render(self, data, media_type=None, renderer_context=None)</code> method.</p>
+<p>To implement a custom renderer, you should override <code>BaseRenderer</code>, set the <code>.media_type</code> and <code>.format</code> properties, and implement the <code>.render(self, data, accepted_media_type=None, renderer_context=None)</code> method.</p>
 <p>The method should return a bytestring, which will be used as the body of the HTTP response.</p>
 <p>The arguments passed to the <code>.render()</code> method are:</p>
 <h3 id="data"><a class="toclink" href="#data"><code>data</code></a></h3>
 <p>The request data, as set by the <code>Response()</code> instantiation.</p>
-<h3 id="media_typenone"><a class="toclink" href="#media_typenone"><code>media_type=None</code></a></h3>
+<h3 id="accepted_media_typenone"><a class="toclink" href="#accepted_media_typenone"><code>accepted_media_type=None</code></a></h3>
 <p>Optional.  If provided, this is the accepted media type, as determined by the content negotiation stage.</p>
 <p>Depending on the client's <code>Accept:</code> header, this may be more specific than the renderer's <code>media_type</code> attribute, and may include media type parameters.  For example <code>"application/json; nested=true"</code>.</p>
 <h3 id="renderer_contextnone"><a class="toclink" href="#renderer_contextnone"><code>renderer_context=None</code></a></h3>
@@ -757,7 +765,7 @@ def simple_html_view(request):
 <p>By default this will include the following keys: <code>view</code>, <code>request</code>, <code>response</code>, <code>args</code>, <code>kwargs</code>.</p>
 <h2 id="example"><a class="toclink" href="#example">Example</a></h2>
 <p>The following is an example plaintext renderer that will return a response with the <code>data</code> parameter as the content of the response.</p>
-<pre><code>from django.utils.encoding import smart_text
+<pre><code>from django.utils.encoding import smart_str
 from rest_framework import renderers
 
 
@@ -765,8 +773,8 @@ class PlainTextRenderer(renderers.BaseRenderer):
     media_type = 'text/plain'
     format = 'txt'
 
-    def render(self, data, media_type=None, renderer_context=None):
-        return smart_text(data, encoding=self.charset)
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        return smart_str(data, encoding=self.charset)
 </code></pre>
 <h2 id="setting-the-character-set"><a class="toclink" href="#setting-the-character-set">Setting the character set</a></h2>
 <p>By default renderer classes are assumed to be using the <code>UTF-8</code> encoding.  To use a different encoding, set the <code>charset</code> attribute on the renderer.</p>
@@ -775,7 +783,7 @@ class PlainTextRenderer(renderers.BaseRenderer):
     format = 'txt'
     charset = 'iso-8859-1'
 
-    def render(self, data, media_type=None, renderer_context=None):
+    def render(self, data, accepted_media_type=None, renderer_context=None):
         return data.encode(self.charset)
 </code></pre>
 <p>Note that if a renderer class returns a unicode string, then the response content will be coerced into a bytestring by the <code>Response</code> class, with the <code>charset</code> attribute set on the renderer used to determine the encoding.</p>
@@ -787,7 +795,7 @@ class PlainTextRenderer(renderers.BaseRenderer):
     charset = None
     render_style = 'binary'
 
-    def render(self, data, media_type=None, renderer_context=None):
+    def render(self, data, accepted_media_type=None, renderer_context=None):
         return data
 </code></pre>
 <hr />
@@ -799,7 +807,7 @@ class PlainTextRenderer(renderers.BaseRenderer):
 <li>Specify multiple types of HTML representation for API clients to use.</li>
 <li>Underspecify a renderer's media type, such as using <code>media_type = 'image/*'</code>, and use the <code>Accept</code> header to vary the encoding of the response.</li>
 </ul>
-<h2 id="varying-behaviour-by-media-type"><a class="toclink" href="#varying-behaviour-by-media-type">Varying behaviour by media type</a></h2>
+<h2 id="varying-behavior-by-media-type"><a class="toclink" href="#varying-behavior-by-media-type">Varying behavior by media type</a></h2>
 <p>In some cases you might want your view to use different serialization styles depending on the accepted media type.  If you need to do this you can access <code>request.accepted_renderer</code> to determine the negotiated renderer that will be used for the response.</p>
 <p>For example:</p>
 <pre><code>@api_view(['GET'])
@@ -898,11 +906,11 @@ In this case you can underspecify the media types it should respond to, by using
 </code></pre>
 <h2 id="messagepack"><a class="toclink" href="#messagepack">MessagePack</a></h2>
 <p><a href="https://msgpack.org/">MessagePack</a> is a fast, efficient binary serialization format.  <a href="https://github.com/juanriaza">Juan Riaza</a> maintains the <a href="https://github.com/juanriaza/django-rest-framework-msgpack">djangorestframework-msgpack</a> package which provides MessagePack renderer and parser support for REST framework.</p>
-<h2 id="xlsx-binary-spreadsheet-endpoints"><a class="toclink" href="#xlsx-binary-spreadsheet-endpoints">XLSX (Binary Spreadsheet Endpoints)</a></h2>
-<p>XLSX is the world's most popular binary spreadsheet format. <a href="https://github.com/flipperpa">Tim Allen</a> of <a href="https://github.com/wharton">The Wharton School</a> maintains <a href="https://github.com/wharton/drf-renderer-xlsx">drf-renderer-xlsx</a>, which renders an endpoint as an XLSX spreadsheet using OpenPyXL, and allows the client to download it. Spreadsheets can be styled on a per-view basis.</p>
+<h2 id="microsoft-excel-xlsx-binary-spreadsheet-endpoints"><a class="toclink" href="#microsoft-excel-xlsx-binary-spreadsheet-endpoints">Microsoft Excel: XLSX (Binary Spreadsheet Endpoints)</a></h2>
+<p>XLSX is the world's most popular binary spreadsheet format. <a href="https://github.com/flipperpa">Tim Allen</a> of <a href="https://github.com/wharton">The Wharton School</a> maintains <a href="https://github.com/wharton/drf-excel">drf-excel</a>, which renders an endpoint as an XLSX spreadsheet using OpenPyXL, and allows the client to download it. Spreadsheets can be styled on a per-view basis.</p>
 <h4 id="installation-configuration_3"><a class="toclink" href="#installation-configuration_3">Installation &amp; configuration</a></h4>
 <p>Install using pip.</p>
-<pre><code>$ pip install drf-renderer-xlsx
+<pre><code>$ pip install drf-excel
 </code></pre>
 <p>Modify your REST framework settings.</p>
 <pre><code>REST_FRAMEWORK = {
@@ -911,14 +919,14 @@ In this case you can underspecify the media types it should respond to, by using
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
-        'drf_renderer_xlsx.renderers.XLSXRenderer',
+        'drf_excel.renderers.XLSXRenderer',
     ],
 }
 </code></pre>
 <p>To avoid having a file streamed without a filename (which the browser will often default to the filename "download", with no extension), we need to use a mixin to override the <code>Content-Disposition</code> header. If no filename is provided, it will default to <code>export.xlsx</code>. For example:</p>
 <pre><code>from rest_framework.viewsets import ReadOnlyModelViewSet
-from drf_renderer_xlsx.mixins import XLSXFileMixin
-from drf_renderer_xlsx.renderers import XLSXRenderer
+from drf_excel.mixins import XLSXFileMixin
+from drf_excel.renderers import XLSXRenderer
 
 from .models import MyExampleModel
 from .serializers import MyExampleSerializer
@@ -938,7 +946,7 @@ class MyExampleViewSet(XLSXFileMixin, ReadOnlyModelViewSet):
 <h2 id="pandas-csv-excel-png"><a class="toclink" href="#pandas-csv-excel-png">Pandas (CSV, Excel, PNG)</a></h2>
 <p><a href="https://github.com/wq/django-rest-pandas">Django REST Pandas</a> provides a serializer and renderers that support additional data processing and output via the <a href="https://pandas.pydata.org/">Pandas</a> DataFrame API.  Django REST Pandas includes renderers for Pandas-style CSV files, Excel workbooks (both <code>.xls</code> and <code>.xlsx</code>), and a number of <a href="https://github.com/wq/django-rest-pandas#supported-formats">other formats</a>. It is maintained by <a href="https://github.com/sheppard">S. Andrew Sheppard</a> as part of the <a href="https://github.com/wq">wq Project</a>.</p>
 <h2 id="latex"><a class="toclink" href="#latex">LaTeX</a></h2>
-<p><a href="https://github.com/mypebble/rest-framework-latex">Rest Framework Latex</a> provides a renderer that outputs PDFs using Laulatex. It is maintained by <a href="https://github.com/mypebble">Pebble (S/F Software)</a>.</p>
+<p><a href="https://github.com/mypebble/rest-framework-latex">Rest Framework Latex</a> provides a renderer that outputs PDFs using Lualatex. It is maintained by <a href="https://github.com/mypebble">Pebble (S/F Software)</a>.</p>
             
 
           </div> <!--/span-->

@@ -239,10 +239,6 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/api-clients/">API Clients</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/internationalization/">Internationalization</a>
                   </li>
                   
@@ -291,6 +287,18 @@
                   
                   <li >
                     <a href="../../community/release-notes/">Release Notes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.16-announcement/">3.16 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.15-announcement/">3.15 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.14-announcement/">3.14 Announcement</a>
                   </li>
                   
                   <li >
@@ -565,9 +573,12 @@
 # Using the standard RequestFactory API to create a form POST request
 factory = APIRequestFactory()
 request = factory.post('/notes/', {'title': 'new idea'})
+
+# Using the standard RequestFactory API to encode JSON data
+request = factory.post('/notes/', {'title': 'new idea'}, content_type='application/json')
 </code></pre>
 <h4 id="using-the-format-argument"><a class="toclink" href="#using-the-format-argument">Using the <code>format</code> argument</a></h4>
-<p>Methods which create a request body, such as <code>post</code>, <code>put</code> and <code>patch</code>, include a <code>format</code> argument, which make it easy to generate requests using a content type other than multipart form data.  For example:</p>
+<p>Methods which create a request body, such as <code>post</code>, <code>put</code> and <code>patch</code>, include a <code>format</code> argument, which make it easy to generate requests using a wide set of request formats.  When using this argument, the factory will select an appropriate renderer and its configured <code>content_type</code>.  For example:</p>
 <pre><code># Create a JSON POST request
 factory = APIRequestFactory()
 request = factory.post('/notes/', {'title': 'new idea'}, format='json')
@@ -576,7 +587,7 @@ request = factory.post('/notes/', {'title': 'new idea'}, format='json')
 <p>To support a wider set of request formats, or change the default format, <a href="#configuration">see the configuration section</a>.</p>
 <h4 id="explicitly-encoding-the-request-body"><a class="toclink" href="#explicitly-encoding-the-request-body">Explicitly encoding the request body</a></h4>
 <p>If you need to explicitly encode the request body, you can do so by setting the <code>content_type</code> flag.  For example:</p>
-<pre><code>request = factory.post('/notes/', json.dumps({'title': 'new idea'}), content_type='application/json')
+<pre><code>request = factory.post('/notes/', yaml.dump({'title': 'new idea'}), content_type='application/yaml')
 </code></pre>
 <h4 id="put-and-patch-with-form-data"><a class="toclink" href="#put-and-patch-with-form-data">PUT and PATCH with form data</a></h4>
 <p>One difference worth noting between Django's <code>RequestFactory</code> and REST framework's <code>APIRequestFactory</code> is that multipart form data will be encoded for methods other than just <code>.post()</code>.</p>
@@ -614,7 +625,7 @@ request = factory.get('/accounts/django-superstars/')
 force_authenticate(request, user=user, token=user.auth_token)
 </code></pre>
 <hr />
-<p><strong>Note</strong>: <code>force_authenticate</code> directly sets <code>request.user</code> to the in-memory <code>user</code> instance. If you are re-using the same <code>user</code> instance across multiple tests that update the saved <code>user</code> state, you may need to call <a href="https://docs.djangoproject.com/en/1.11/ref/models/instances/#django.db.models.Model.refresh_from_db"><code>refresh_from_db()</code></a> between tests.</p>
+<p><strong>Note</strong>: <code>force_authenticate</code> directly sets <code>request.user</code> to the in-memory <code>user</code> instance. If you are re-using the same <code>user</code> instance across multiple tests that update the saved <code>user</code> state, you may need to call <a href="https://docs.djangoproject.com/en/stable/ref/models/instances/#django.db.models.Model.refresh_from_db"><code>refresh_from_db()</code></a> between tests.</p>
 <hr />
 <p><strong>Note</strong>: When using <code>APIRequestFactory</code>, the object that is returned is Django's standard <code>HttpRequest</code>, and not REST framework's <code>Request</code> object, which is only generated once the view is called.</p>
 <p>This means that setting attributes directly on the request object may not always have the effect you expect.  For example, setting <code>.token</code> directly will have no effect, and setting <code>.user</code> directly will only work if session authentication is being used.</p>
@@ -770,7 +781,7 @@ client.session.headers.update({'x-test': 'true'})
 </code></pre>
 <hr />
 <h1 id="api-test-cases"><a class="toclink" href="#api-test-cases">API Test cases</a></h1>
-<p>REST framework includes the following test case classes, that mirror the existing Django test case classes, but use <code>APIClient</code> instead of Django's default <code>Client</code>.</p>
+<p>REST framework includes the following test case classes, that mirror the existing <a href="https://docs.djangoproject.com/en/stable/topics/testing/tools/#provided-test-case-classes">Django's test case classes</a>, but use <code>APIClient</code> instead of Django's default <code>Client</code>.</p>
 <ul>
 <li><code>APISimpleTestCase</code></li>
 <li><code>APITransactionTestCase</code></li>
